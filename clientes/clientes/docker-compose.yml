@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysqlClientes
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: clientes
+      MYSQL_USER: user
+      MYSQL_PASSWORD: user_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/Clientes.sql
+      - mysql-data:/var/lib/mysql
+    networks:
+      - cliente-network
+
+  clientes-app:
+    image: clientes-app
+    container_name: clientes-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysqlClientes:3306/clientes
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root_password
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_HIBERNATE_DIALECT: org.hibernate.dialect.MySQLDialect
+    ports:
+      - "8081:8081"
+    depends_on:
+      - mysql
+    networks:
+      - cliente-network
+
+networks:
+  cliente-network:
+    driver: bridge
+
+volumes:
+  mysql-data:

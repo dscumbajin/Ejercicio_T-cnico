@@ -1,0 +1,18 @@
+package com.example.clientes.service;
+
+import com.example.clientes.dto.ClienteRequestDTO;
+import com.example.clientes.dto.ClienteResponseDTO;
+import com.example.clientes.entity.Cliente;
+
+import java.util.List;
+
+public interface IClienteServiceImpl {
+
+    public boolean save(ClienteRequestDTO clienteRequestDTO);
+    public boolean update(Long id, ClienteRequestDTO clienteRequestDTO);
+    public boolean delete(Long id);
+    public List<ClienteResponseDTO> clienteDTOs();
+    public ClienteResponseDTO findById(Long id);
+    public ClienteRequestDTO findByIdentificacion(String identificacion);
+    public ClienteRequestDTO findByNombre(String nombre);
+}
