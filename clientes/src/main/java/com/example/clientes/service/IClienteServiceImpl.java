@@ -8,8 +8,8 @@ import java.util.List;
 
 public interface IClienteServiceImpl {
 
-    public boolean save(Cliente cliente);
-    public boolean update(Long id, Cliente cliente);
+    public boolean save(ClienteRequestDTO clienteRequestDTO);
+    public boolean update(Long id, ClienteRequestDTO clienteRequestDTO);
     public boolean delete(Long id);
     public List<ClienteResponseDTO> clienteDTOs();
     public ClienteResponseDTO findById(Long id);

@@ -2,11 +2,10 @@ package com.example.clientes.controller;
 
 import com.example.clientes.dto.ClienteRequestDTO;
 import com.example.clientes.dto.ClienteResponseDTO;
-import com.example.clientes.entity.Cliente;
 import com.example.clientes.exception.ClienteNotFoundException;
-import com.example.clientes.mapper.ClienteMapper;
-import com.example.clientes.service.ClienteServiceImpl;
-import com.example.clientes.validator.ClienteValidatorImpl;
+import com.example.clientes.mapper.ClientMapper;
+import com.example.clientes.service.IClienteServiceImpl;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -21,10 +20,10 @@ import java.util.List;
 public class ClienteController {
 
     @Autowired
-    private ClienteValidatorImpl clienteValidator;
+    private IClienteServiceImpl clienteService;
 
     @Autowired
-    private ClienteServiceImpl clienteService;
+    private ClientMapper clientMapper;
 
     @GetMapping
     public ResponseEntity<List<ClienteResponseDTO>> getAllClientes() {
@@ -38,8 +37,8 @@ public class ClienteController {
             ClienteResponseDTO clienteResponseDTO = clienteService.findById(id);
             return new ResponseEntity<>(clienteResponseDTO, HttpStatus.OK);
         }catch (Exception e) {
-                return new ResponseEntity<>(e.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
-            }
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
+        }
     }
 
     @GetMapping("/cliente")
@@ -64,20 +63,18 @@ public class ClienteController {
 
     @Transactional
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> createCliente(@RequestBody Cliente cliente) {
+    public ResponseEntity<?> createCliente( @Valid @RequestBody ClienteRequestDTO ClienteRequestDTO) {
         try {
-            clienteValidator.validador(cliente);
-            clienteService.save(cliente);
-            return new ResponseEntity<>(ClienteMapper.toClienteDTO(cliente), HttpStatus.CREATED);
+            return new ResponseEntity<>(clienteService.save(ClienteRequestDTO), HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
         }
     }
     @Transactional
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateCliente(@PathVariable Long id, @RequestBody Cliente cliente) {
+    public ResponseEntity<?> updateCliente(@PathVariable Long id, @RequestBody ClienteRequestDTO ClienteRequestDTO) {
         try {
-            boolean resp = clienteService.update(id, cliente);
+            boolean resp = clienteService.update(id, ClienteRequestDTO);
             return new ResponseEntity<>("Cliente actualizado", HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
