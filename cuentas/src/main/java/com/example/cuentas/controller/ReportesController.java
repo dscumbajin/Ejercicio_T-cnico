@@ -2,6 +2,8 @@ package com.example.cuentas.controller;
 
 import com.example.cuentas.dto.ReporteDTO;
 import com.example.cuentas.service.CuentaServiceImpl;
+import com.example.cuentas.service.ICunetaServiceImpl;
+import com.example.cuentas.service.IMoviminetoServiceImpl;
 import com.example.cuentas.service.MovimientoServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,10 +20,10 @@ import java.util.List;
 public class ReportesController {
 
     @Autowired
-    private MovimientoServiceImpl movimientoService;
+    private IMoviminetoServiceImpl movimientoService;
 
     @Autowired
-    private CuentaServiceImpl cuentaService;
+    private ICunetaServiceImpl cuentaService;
 
     @GetMapping("/cliente")
     public ResponseEntity<?> findByCuentaNumeroAndFechaBetween(@RequestParam String numero,

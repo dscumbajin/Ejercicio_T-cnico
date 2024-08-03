@@ -7,7 +7,7 @@ import com.example.cuentas.dto.CuentaRequestDTO;
 import com.example.cuentas.entity.Cuenta;
 import com.example.cuentas.exception.CuentaNotFoundException;
 import com.example.cuentas.exception.CuentaYaExisteException;
-import com.example.cuentas.mapper.CuentaMapper;
+import com.example.cuentas.mapper.CuentaMappers;
 import com.example.cuentas.repository.CuentaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,17 +25,20 @@ public class CuentaServiceImpl implements ICunetaServiceImpl {
     @Autowired
     private ClienteClient clienteClient;
 
+    @Autowired
+    private CuentaMappers cuentaMappers;
+
     @Override
-    public boolean save(CuentaRequestDTO cuentaDTO) {
-        Cuenta cuentaReq = cuentaRepository.findByNumero(cuentaDTO.getNumero());
+    public boolean save(CuentaRequestDTO cuentaRequestDTO) {
+        Cuenta cuentaReq = cuentaRepository.findByNumero(cuentaRequestDTO.getNumero());
         if (cuentaReq != null) {
             throw new CuentaYaExisteException("El número de cuenta debe ser único");
         } else {
-            if(cuentaDTO.getIdentificacion() != null){
-                ClienteDTO cliente = clienteClient.getCliente(cuentaDTO.getIdentificacion());
-                if (cliente != null) {
-                    Cuenta cuenta = CuentaMapper.toCuenta(cuentaDTO);
-                    cuenta.setClienteId(cliente.getId().toString());
+            if(cuentaRequestDTO.getIdentificacion() != null){
+                ClienteDTO clienteDTO = clienteClient.getCliente(cuentaRequestDTO.getIdentificacion());
+                if (clienteDTO != null) {
+                    Cuenta cuenta = cuentaMappers.toCuenta(cuentaRequestDTO);
+                    cuenta.setClienteId(clienteDTO.getId().toString());
                     cuentaRepository.save(cuenta);
                     return true;
                 } else {
@@ -84,7 +87,7 @@ public class CuentaServiceImpl implements ICunetaServiceImpl {
             }
         }
         return cuentasDetalles.stream()
-                .map(CuentaMapper::toCuentaDTO)
+                .map(cuentaMappers::toCuentaDTO)
                 .toList();
     }
 
@@ -92,6 +95,8 @@ public class CuentaServiceImpl implements ICunetaServiceImpl {
     public CuentaDTO findById(Long id) {
         Cuenta cuenta = cuentaRepository.findById(id)
                 .orElseThrow(() -> new CuentaNotFoundException("Cuenta no encontrado con ID: " + id));
-        return CuentaMapper.toCuentaDTO(cuenta);
+        ClienteDTO clienteDTO = clienteClient.getClienteById(Long.parseLong(cuenta.getClienteId()));
+        cuenta.setClienteId(clienteDTO.getNombre());
+        return cuentaMappers.toCuentaDTO(cuenta);
     }
 }

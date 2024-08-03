@@ -8,7 +8,7 @@ import com.example.cuentas.entity.Cuenta;
 import com.example.cuentas.entity.Movimiento;
 import com.example.cuentas.exception.CuentaNotFoundException;
 import com.example.cuentas.exception.MovimientoNotFoundException;
-import com.example.cuentas.mapper.MovimientoMapper;
+import com.example.cuentas.mapper.MovimientoMappers;
 import com.example.cuentas.repository.CuentaRepository;
 import com.example.cuentas.repository.MovimientoRepository;
 import com.example.cuentas.util.Conversion;
@@ -33,6 +33,9 @@ public class MovimientoServiceImpl implements IMoviminetoServiceImpl {
     @Autowired
     private ClienteClient clienteClient;
 
+    @Autowired
+    private MovimientoMappers movimientoMappers;
+
     @Override
     public Movimiento save(MovimientoDTO movimientoDTO) {
         Cuenta cuenta = cuentaRepository.findByNumero(movimientoDTO.getNumero());
@@ -52,11 +55,9 @@ public class MovimientoServiceImpl implements IMoviminetoServiceImpl {
                         saldoTotal = depositar(movimientoDTO.getValor(), listMovimientos.get(0).getSaldo());
                     }
                 }
-                Movimiento movimiento = MovimientoMapper.toMovimiento(movimientoDTO);
+                Movimiento movimiento = movimientoMappers.toMovimiento(movimientoDTO);
                 movimiento.setFecha(new Date());
                 movimiento.setSaldo(saldoTotal);
-                movimiento.setTipo(movimientoDTO.getTipo());
-                movimiento.setValor(movimientoDTO.getValor());
                 movimiento.setCuenta(cuenta);
                 movimientoRepository.save(movimiento);
                 return movimiento;
@@ -72,7 +73,6 @@ public class MovimientoServiceImpl implements IMoviminetoServiceImpl {
         if (movimientoOptional.isEmpty()) {
             throw new MovimientoNotFoundException("No existe el movimiento con el ID:  " + id);
         } else {
-
             Movimiento movimiento = movimientoOptional.get();
             if("Retiro".equals(movimientoDTO.getTipo())){
                 movimiento.setSaldo(retirar(movimientoDTO.getValor(), movimiento.getSaldo()));
@@ -101,7 +101,7 @@ public class MovimientoServiceImpl implements IMoviminetoServiceImpl {
     public List<MovimientoDTO> movimientoDtos() {
         List<Movimiento> movimientos = movimientoRepository.findAll();
         return movimientos.stream()
-                .map(MovimientoMapper::toMovimientoDTO)
+                .map(movimientoMappers::toMovimientoDTO)
                 .collect(Collectors.toList());
     }
 
@@ -109,7 +109,7 @@ public class MovimientoServiceImpl implements IMoviminetoServiceImpl {
     public MovimientoDTO findById(Long id) {
         Movimiento movimiento = movimientoRepository.findById(id)
                 .orElseThrow(() -> new MovimientoNotFoundException("No se encontro el movimiento con ID: " + id));
-        return MovimientoMapper.toMovimientoDTO(movimiento);
+        return movimientoMappers.toMovimientoDTO(movimiento);
     }
 
     @Override
@@ -118,7 +118,7 @@ public class MovimientoServiceImpl implements IMoviminetoServiceImpl {
         List<Movimiento> movimientos = movimientoRepository.findByCuentaNumero(numero);
                  if(!movimientos.isEmpty()){
                      for (Movimiento movimiento : movimientos) {
-                         movimientosDTO.add(MovimientoMapper.toMovimientoDTO(movimiento));
+                         movimientosDTO.add(movimientoMappers.toMovimientoDTO(movimiento));
                      }
                  }else {
                      throw new MovimientoNotFoundException("No se encontro el movimientos con el numero de cuenta: " + numero);
@@ -135,7 +135,7 @@ public class MovimientoServiceImpl implements IMoviminetoServiceImpl {
         if(!movimientos.isEmpty()){
             for (Movimiento movimiento : movimientos) {
                 ClienteDTO cliente = clienteClient.getClienteById(Long.parseLong(movimiento.getCuenta().getClienteId()));
-                ReporteDTO reporteDTO = MovimientoMapper.toReporteDTO(movimiento);
+                ReporteDTO reporteDTO = movimientoMappers.toReporteDTO(movimiento);
                 reporteDTO.setCliente(cliente.getNombre());
                 reporteDTOS.add(reporteDTO);
             }
@@ -159,7 +159,7 @@ public class MovimientoServiceImpl implements IMoviminetoServiceImpl {
                     if(!movimientos.isEmpty()){
                         for (Movimiento movimiento : movimientos) {
                             ClienteDTO cliente1 = clienteClient.getClienteById(Long.parseLong(movimiento.getCuenta().getClienteId()));
-                            ReporteDTO reporteDTO = MovimientoMapper.toReporteDTO(movimiento);
+                            ReporteDTO reporteDTO = movimientoMappers.toReporteDTO(movimiento);
                             reporteDTO.setCliente(cliente1.getNombre());
                             if("Retiro".equals(movimiento.getTipo()) && !movimiento.getValor().contains("-")){
                                 reporteDTO.setMovimiento("-"+movimiento.getValor());

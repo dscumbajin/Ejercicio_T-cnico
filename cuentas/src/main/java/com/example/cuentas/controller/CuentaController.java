@@ -3,8 +3,9 @@ package com.example.cuentas.controller;
 import com.example.cuentas.dto.CuentaDTO;
 import com.example.cuentas.dto.CuentaRequestDTO;
 import com.example.cuentas.exception.CuentaNotFoundException;
-import com.example.cuentas.mapper.CuentaMapper;
 import com.example.cuentas.service.CuentaServiceImpl;
+import com.example.cuentas.service.ICunetaServiceImpl;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -18,7 +19,7 @@ import java.util.List;
 public class CuentaController {
 
     @Autowired
-    private CuentaServiceImpl cuentaService;
+    private ICunetaServiceImpl cuentaService;
 
     @GetMapping
     public ResponseEntity<List<CuentaDTO>>  getAllCuentas() {
@@ -35,9 +36,8 @@ public class CuentaController {
         }
     }
 
-
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> createCuenta(@RequestBody CuentaRequestDTO cuentaDTO) {
+    public ResponseEntity<?> createCuenta(@Valid @RequestBody CuentaRequestDTO cuentaDTO) {
         try {
             cuentaService.save(cuentaDTO);
             return new ResponseEntity<>("Se creo con exito la cuenta: " + cuentaDTO.getNumero(), HttpStatus.CREATED);
@@ -47,7 +47,7 @@ public class CuentaController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateCuenta(@PathVariable Long id, @RequestBody CuentaDTO cuentaDTO) {
+    public ResponseEntity<?> updateCuenta(@PathVariable Long id, @Valid @RequestBody CuentaDTO cuentaDTO) {
         try {
             boolean resp = cuentaService.update(id, cuentaDTO);
             return new ResponseEntity<>("Cuenta actualizado", HttpStatus.CREATED);
