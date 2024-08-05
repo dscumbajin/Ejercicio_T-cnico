@@ -10,6 +10,7 @@ import java.util.List;
 @Repository
 public interface CuentaRepository extends JpaRepository<Cuenta, Serializable> {
 
-    public Cuenta findByNumero(String numero);
-    public List<Cuenta> findByClienteId(String clienteId);
+    Cuenta findByNumero(String numero);
+    List<Cuenta> findByClienteId(String clienteId);
+    boolean existsByNumero(String numero);
 }
