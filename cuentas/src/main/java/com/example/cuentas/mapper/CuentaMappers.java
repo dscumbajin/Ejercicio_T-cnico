@@ -13,6 +13,10 @@ public interface CuentaMappers {
             @Mapping(source = "clienteId", target = "nombre")
     })
     CuentaDTO toCuentaDTO(Cuenta cuenta);
-
+    @Mappings({
+            @Mapping(target = "cuentaId", ignore = true),
+            @Mapping(target = "clienteId", ignore = true),
+            @Mapping(target = "movimientos", ignore = true)
+    })
     Cuenta toCuenta(CuentaRequestDTO cuentaDTO);
 }

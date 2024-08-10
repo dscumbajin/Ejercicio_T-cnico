@@ -16,6 +16,11 @@ public interface MovimientoMappers {
     })
     MovimientoDTO toMovimientoDTO(Movimiento movimiento);
 
+    @Mappings({
+            @Mapping(target = "id", ignore = true),
+            @Mapping( target = "fecha", ignore = true),
+            @Mapping(target = "cuenta", ignore = true)
+    })
     Movimiento toMovimiento(MovimientoDTO movimientoDTO);
 
     @Mappings({
@@ -23,7 +28,8 @@ public interface MovimientoMappers {
             @Mapping(source = "movimiento.cuenta.saldoInicial", target = "saldoInicial"),
             @Mapping(source = "movimiento.saldo", target = "saldoDisponible"),
             @Mapping(source = "movimiento.cuenta.estado", target = "estado"),
-            @Mapping(source = "movimiento.valor", target = "movimiento")
+            @Mapping(source = "movimiento.valor", target = "movimiento"),
+            @Mapping(target = "cliente",ignore = true)
     })
     ReporteDTO toReporteDTO(Movimiento movimiento);
 }
