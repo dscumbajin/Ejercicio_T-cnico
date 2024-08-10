@@ -28,108 +28,69 @@ public class ClienteController {
     private ClientMapper clientMapper;
 
     @GetMapping
-    public ResponseEntity<Map<String, Object>> getAllClientes() {
-        Map<String, Object> response = new HashMap<>();
+    public ResponseEntity<List<ClienteResponseDTO>> getAllClientes() {
         List<ClienteResponseDTO> clienteResponseDTOS = clienteService.clienteDTOs();
-        response.put("data", clienteResponseDTOS);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(clienteResponseDTOS);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Map<String, Object>> getClienteById(@PathVariable Long id) {
-        Map<String, Object> response = new HashMap<>();
+    public ResponseEntity<?> getClienteById(@PathVariable Long id) {
         try {
             ClienteResponseDTO clienteResponseDTO = clienteService.findById(id);
-            response.put("data", clienteResponseDTO);
-            return ResponseEntity.ok(response);
-        } catch (ClienteNotFoundException e) {
-            response.put("error", e.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-        } catch (Exception e) {
-            response.put("error", "Error al obtener el cliente: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            return new ResponseEntity<>(clienteResponseDTO, HttpStatus.OK);
+        }catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
         }
     }
 
     @GetMapping("/cliente")
-    public ResponseEntity<Map<String, Object>> getClienteByIdentificacion(@RequestParam String identificacion) {
-        Map<String, Object> response = new HashMap<>();
+    public ResponseEntity<?> getClienteByIdentificacion(@RequestParam String identificacion) {
         try {
             ClienteRequestDTO clienteRequestDTO = clienteService.findByIdentificacion(identificacion);
-            response.put("data", clienteRequestDTO);
-            return ResponseEntity.ok(response);
-        } catch (ClienteNotFoundException e) {
-            response.put("error", e.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            return new ResponseEntity<>(clienteRequestDTO, HttpStatus.CREATED);
         } catch (Exception e) {
-            response.put("error", "Error al obtener el cliente: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
         }
     }
 
     @GetMapping("/nombre")
-    public ResponseEntity<Map<String, Object>> getClienteByName(@RequestParam String nombre) {
-        Map<String, Object> response = new HashMap<>();
+    public ResponseEntity<?> getClienteByName(@RequestParam String nombre) {
         try {
             ClienteRequestDTO clienteRequestDTO = clienteService.findByNombre(nombre);
-            response.put("data", clienteRequestDTO);
-            return ResponseEntity.ok(response);
-        } catch (ClienteNotFoundException e) {
-            response.put("error", e.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            return new ResponseEntity<>(clienteRequestDTO, HttpStatus.CREATED);
         } catch (Exception e) {
-            response.put("error", "Error al obtener el cliente: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
         }
     }
 
     @Transactional
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Map<String, Object>> createCliente(@Valid @RequestBody ClienteRequestDTO clienteRequestDTO) {
-        Map<String, Object> response = new HashMap<>();
+    public ResponseEntity<?> createCliente( @Valid @RequestBody ClienteRequestDTO ClienteRequestDTO) {
         try {
-            boolean createdCliente = clienteService.save(clienteRequestDTO);
-            response.put("data", createdCliente);
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+            return new ResponseEntity<>(clienteService.save(ClienteRequestDTO), HttpStatus.CREATED);
         } catch (Exception e) {
-            response.put("error", "Error al crear el cliente: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(response);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
         }
     }
-
     @Transactional
     @PutMapping("/{id}")
-    public ResponseEntity<Map<String, Object>> updateCliente(@PathVariable Long id, @Valid @RequestBody ClienteRequestDTO clienteRequestDTO) {
-        Map<String, Object> response = new HashMap<>();
+    public ResponseEntity<?> updateCliente(@PathVariable Long id, @RequestBody ClienteRequestDTO ClienteRequestDTO) {
         try {
-            boolean updated = clienteService.update(id, clienteRequestDTO);
-            if (updated) {
-                response.put("message", "Cliente actualizado correctamente");
-                return ResponseEntity.ok(response);
-            } else {
-                response.put("error", "No se pudo actualizar el cliente");
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-            }
+            boolean resp = clienteService.update(id, ClienteRequestDTO);
+            return new ResponseEntity<>("Cliente actualizado", HttpStatus.CREATED);
         } catch (Exception e) {
-            response.put("error", "Error al actualizar el cliente: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(response);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
         }
     }
 
     @Transactional
     @DeleteMapping("/{id}")
-    public ResponseEntity<Map<String, Object>> deleteCliente(@PathVariable Long id) {
-        Map<String, Object> response = new HashMap<>();
+    public ResponseEntity<?> deleteCliente(@PathVariable Long id) {
         try {
             clienteService.delete(id);
-            response.put("message", "Cliente eliminado correctamente");
-            return ResponseEntity.ok(response);
+            return new ResponseEntity<>("Cliente eliminado correctamente", HttpStatus.OK);
         } catch (ClienteNotFoundException e) {
-            response.put("error", e.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-        } catch (Exception e) {
-            response.put("error", "Error al eliminar el cliente: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 }
