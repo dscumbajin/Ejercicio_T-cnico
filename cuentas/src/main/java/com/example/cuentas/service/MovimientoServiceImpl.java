@@ -126,55 +126,6 @@ public class MovimientoServiceImpl implements IMoviminetoServiceImpl {
         return movimientosDTO;
     }
 
-    @Override
-    public List<ReporteDTO> findByCuentaNumeroAndFechaBetween(String numero, String fechaInicio, String fechaFin) {
-        Date inicioFecha = Conversion.convertStringToDate(fechaInicio);
-        Date finFecha = Conversion.convertStringToDate(fechaFin);
-        List<ReporteDTO> reporteDTOS = new ArrayList<>();
-        List<Movimiento> movimientos = movimientoRepository.findByCuentaNumeroAndFechaBetween(numero, inicioFecha, finFecha);
-        if(!movimientos.isEmpty()){
-            for (Movimiento movimiento : movimientos) {
-                ClienteDTO cliente = clienteClient.getClienteById(Long.parseLong(movimiento.getCuenta().getClienteId()));
-                ReporteDTO reporteDTO = movimientoMappers.toReporteDTO(movimiento);
-                reporteDTO.setCliente(cliente.getNombre());
-                reporteDTOS.add(reporteDTO);
-            }
-        }else {
-            throw new MovimientoNotFoundException("No se encontro el movimientos con el numero de cuenta : "
-                    + numero +" en el rango de fechas: " + fechaInicio + " - " + fechaFin );
-        }
-        return reporteDTOS;
-    }
-
-    public List<ReporteDTO> findByNombreAndFechaBetween(String nombre, String fechaInicio, String fechaFin) {
-        Date inicioFecha = Conversion.convertStringToDate(fechaInicio);
-        Date finFecha = Conversion.convertStringToDate(fechaFin);
-        List<ReporteDTO> reporteDTOS = new ArrayList<>();
-        ClienteDTO cliente = clienteClient.getClienteByName(nombre);
-        if(cliente != null){
-            List<Cuenta> cuentas = cuentaRepository.findByClienteId(cliente.getId().toString());
-            if(!cuentas.isEmpty()){
-                for (Cuenta cuenta : cuentas) {
-                    List<Movimiento> movimientos = movimientoRepository.findByCuentaNumeroAndFechaBetween(cuenta.getNumero(), inicioFecha, finFecha);
-                    if(!movimientos.isEmpty()){
-                        for (Movimiento movimiento : movimientos) {
-                            ClienteDTO cliente1 = clienteClient.getClienteById(Long.parseLong(movimiento.getCuenta().getClienteId()));
-                            ReporteDTO reporteDTO = movimientoMappers.toReporteDTO(movimiento);
-                            reporteDTO.setCliente(cliente1.getNombre());
-                            if("Retiro".equals(movimiento.getTipo()) && !movimiento.getValor().contains("-")){
-                                reporteDTO.setMovimiento("-"+movimiento.getValor());
-                            }
-                            reporteDTOS.add(reporteDTO);
-                        }
-                    }
-                }
-            }
-        }
-
-        return reporteDTOS;
-    }
-
-
     public double retirar(String valor, double saldo) {
         if (valor.contains("-")){
             valor = valor.replace("-","");

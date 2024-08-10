@@ -1,10 +1,7 @@
 package com.example.cuentas.controller;
 
 import com.example.cuentas.dto.ReporteDTO;
-import com.example.cuentas.service.CuentaServiceImpl;
-import com.example.cuentas.service.ICunetaServiceImpl;
-import com.example.cuentas.service.IMoviminetoServiceImpl;
-import com.example.cuentas.service.MovimientoServiceImpl;
+import com.example.cuentas.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +20,7 @@ import java.util.Map;
 public class ReportesController {
 
     @Autowired
-    private IMoviminetoServiceImpl movimientoService;
+    private IReporteServiceImpl reporteService;
 
     @Autowired
     private ICunetaServiceImpl cuentaService;
@@ -35,7 +32,7 @@ public class ReportesController {
             @RequestParam String fechaFin) {
         Map<String, Object> response = new HashMap<>();
         try {
-            List<ReporteDTO> reporteDTOS = movimientoService.findByCuentaNumeroAndFechaBetween(numero, fechaInicio, fechaFin);
+            List<ReporteDTO> reporteDTOS = reporteService.findByCuentaNumeroAndFechaBetween(numero, fechaInicio, fechaFin);
             if (reporteDTOS.isEmpty()) {
                 response.put("message", "No se encontraron reportes para la cuenta número " + numero +
                         " entre " + fechaInicio + " y " + fechaFin);
@@ -60,7 +57,7 @@ public class ReportesController {
             @RequestParam String fechaFin) {
         Map<String, Object> response = new HashMap<>();
         try {
-            List<ReporteDTO> reporteDTOS = movimientoService.findByNombreAndFechaBetween(nombre, fechaInicio, fechaFin);
+            List<ReporteDTO> reporteDTOS = reporteService.findByNombreAndFechaBetween(nombre, fechaInicio, fechaFin);
             if (reporteDTOS.isEmpty()) {
                 response.put("message", "No existen movimientos del cliente " + nombre +
                         " en el rango de fechas: " + fechaInicio + " - " + fechaFin);
