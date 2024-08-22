@@ -15,7 +15,7 @@ services:
       - ./init.sql:/docker-entrypoint-initdb.d/Clientes.sql
       - mysql-data:/var/lib/mysql
     networks:
-      - cliente-network
+      - springboot-network
 
   clientes-app:
     image: clientes-app
@@ -34,10 +34,10 @@ services:
     depends_on:
       - mysql
     networks:
-      - cliente-network
+      - springboot-network
 
 networks:
-  cliente-network:
+  springboot-network:
     driver: bridge
 
 volumes:

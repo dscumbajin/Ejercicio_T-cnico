@@ -1,9 +1,6 @@
 package com.example.cuentas.service;
 
-import com.example.cuentas.client.ClienteClient;
-import com.example.cuentas.dto.ClienteDTO;
 import com.example.cuentas.dto.MovimientoDTO;
-import com.example.cuentas.dto.ReporteDTO;
 import com.example.cuentas.entity.Cuenta;
 import com.example.cuentas.entity.Movimiento;
 import com.example.cuentas.exception.CuentaNotFoundException;
@@ -11,7 +8,6 @@ import com.example.cuentas.exception.MovimientoNotFoundException;
 import com.example.cuentas.mapper.MovimientoMappers;
 import com.example.cuentas.repository.CuentaRepository;
 import com.example.cuentas.repository.MovimientoRepository;
-import com.example.cuentas.util.Conversion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,10 +27,13 @@ public class MovimientoServiceImpl implements IMoviminetoServiceImpl {
     private MovimientoRepository movimientoRepository;
 
     @Autowired
-    private ClienteClient clienteClient;
+    private MovimientoMappers movimientoMappers;
 
     @Autowired
-    private MovimientoMappers movimientoMappers;
+    private DepositoSaldoImpl depositoSaldo;
+
+    @Autowired
+    private RetiroSaldoImpl retiroSaldo;
 
     @Override
     public Movimiento save(MovimientoDTO movimientoDTO) {
@@ -44,15 +43,15 @@ public class MovimientoServiceImpl implements IMoviminetoServiceImpl {
                 double saldoTotal;
                 if(listMovimientos.isEmpty()){
                     if("Retiro".equals(movimientoDTO.getTipo())){
-                        saldoTotal = retirar(movimientoDTO.getValor(), cuenta.getSaldoInicial());
+                        saldoTotal = retiroSaldo.ajustarSaldo(movimientoDTO.getValor(), cuenta.getSaldoInicial());
                     }else{
-                        saldoTotal = depositar(movimientoDTO.getValor(), cuenta.getSaldoInicial());
+                        saldoTotal = depositoSaldo.ajustarSaldo(movimientoDTO.getValor(), cuenta.getSaldoInicial());
                     }
                 }else {
                     if("Retiro".equals(movimientoDTO.getTipo())){
-                        saldoTotal = retirar(movimientoDTO.getValor(), listMovimientos.get(0).getSaldo());
+                        saldoTotal = retiroSaldo.ajustarSaldo(movimientoDTO.getValor(), listMovimientos.get(0).getSaldo());
                     }else{
-                        saldoTotal = depositar(movimientoDTO.getValor(), listMovimientos.get(0).getSaldo());
+                        saldoTotal = depositoSaldo.ajustarSaldo(movimientoDTO.getValor(), listMovimientos.get(0).getSaldo());
                     }
                 }
                 Movimiento movimiento = movimientoMappers.toMovimiento(movimientoDTO);
@@ -75,9 +74,9 @@ public class MovimientoServiceImpl implements IMoviminetoServiceImpl {
         } else {
             Movimiento movimiento = movimientoOptional.get();
             if("Retiro".equals(movimientoDTO.getTipo())){
-                movimiento.setSaldo(retirar(movimientoDTO.getValor(), movimiento.getSaldo()));
+                movimiento.setSaldo(retiroSaldo.ajustarSaldo(movimientoDTO.getValor(), movimiento.getSaldo()));
             }else{
-                movimiento.setSaldo(depositar(movimientoDTO.getValor(), movimiento.getSaldo()));
+                movimiento.setSaldo(depositoSaldo.ajustarSaldo(movimientoDTO.getValor(), movimiento.getSaldo()));
             }
             movimiento.setTipo(movimientoDTO.getTipo());
             movimiento.setValor(movimientoDTO.getValor());
@@ -125,28 +124,5 @@ public class MovimientoServiceImpl implements IMoviminetoServiceImpl {
                  }
         return movimientosDTO;
     }
-
-    public double retirar(String valor, double saldo) {
-        if (valor.contains("-")){
-            valor = valor.replace("-","");
-        }
-        if (Double.parseDouble(valor) > saldo) {
-            throw new MovimientoNotFoundException("Saldo no disponible");
-        } else {
-            saldo -= Double.parseDouble(valor);
-            System.out.println("Retiro exitoso. Saldo restante: " + saldo);
-            return saldo;
-        }
-    }
-    public double depositar(String valor, double saldo) {
-        if (Double.parseDouble(valor) > 0) {
-            saldo += Double.parseDouble(valor);
-            System.out.println("Depósito exitoso. Saldo actual: " + saldo);
-            return saldo;
-        } else {
-            throw new MovimientoNotFoundException("El valor tiene que ser positivo para depositar");
-        }
-    }
-
 
 }

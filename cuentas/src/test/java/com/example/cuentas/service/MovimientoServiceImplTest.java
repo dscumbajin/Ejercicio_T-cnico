@@ -1,9 +1,7 @@
 package com.example.cuentas.service;
 
 import com.example.cuentas.client.ClienteClient;
-import com.example.cuentas.dto.ClienteDTO;
 import com.example.cuentas.dto.MovimientoDTO;
-import com.example.cuentas.dto.ReporteDTO;
 import com.example.cuentas.entity.Cuenta;
 import com.example.cuentas.entity.Movimiento;
 import com.example.cuentas.exception.CuentaNotFoundException;
@@ -11,12 +9,12 @@ import com.example.cuentas.exception.MovimientoNotFoundException;
 import com.example.cuentas.mapper.MovimientoMappers;
 import com.example.cuentas.repository.CuentaRepository;
 import com.example.cuentas.repository.MovimientoRepository;
-import com.example.cuentas.util.Conversion;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
 
@@ -33,6 +31,12 @@ class MovimientoServiceImplTest {
 
     @Mock
     private MovimientoMappers movimientoMappers;
+
+    @Mock
+    private DepositoSaldoImpl depositoSaldo;
+
+    @Mock
+    private RetiroSaldoImpl retiroSaldo;
 
     @InjectMocks
     private MovimientoServiceImpl movimientoService;
@@ -65,7 +69,7 @@ class MovimientoServiceImplTest {
 
         when(cuentaRepository.findByNumero("12345")).thenReturn(cuenta);
         when(movimientoMappers.toMovimiento(movimientoDTO)).thenReturn(new Movimiento());
-
+        when(depositoSaldo.ajustarSaldo(movimientoDTO.getValor(),cuenta.getSaldoInicial())).thenReturn(600.00);
         Movimiento result = movimientoService.save(movimientoDTO);
 
         assertEquals(600.00, result.getSaldo());
@@ -95,7 +99,7 @@ class MovimientoServiceImplTest {
         movimientoDTO.setValor("100.00");
 
         when(movimientoRepository.findById(1L)).thenReturn(Optional.of(movimiento));
-
+        when(retiroSaldo.ajustarSaldo(movimientoDTO.getValor(),movimiento.getSaldo())).thenReturn(400.00);
         Movimiento updatedMovimiento = movimientoService.update(1L, movimientoDTO);
 
         assertEquals(400.00, updatedMovimiento.getSaldo());
@@ -124,7 +128,7 @@ class MovimientoServiceImplTest {
 
         boolean result = movimientoService.delete(1L);
 
-        assertEquals(true, result);
+        assertTrue(result);
         verify(movimientoRepository, times(1)).deleteById(1L);
     }
 
