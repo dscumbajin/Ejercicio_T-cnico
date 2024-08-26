@@ -1,7 +1,6 @@
 package com.example.cuentas.service;
 
 import com.example.cuentas.dto.MovimientoDTO;
-import com.example.cuentas.dto.ReporteDTO;
 import com.example.cuentas.entity.Movimiento;
 
 import java.util.List;

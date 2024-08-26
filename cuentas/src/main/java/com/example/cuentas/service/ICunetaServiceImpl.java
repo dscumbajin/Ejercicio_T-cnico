@@ -2,7 +2,6 @@ package com.example.cuentas.service;
 
 import com.example.cuentas.dto.CuentaDTO;
 import com.example.cuentas.dto.CuentaRequestDTO;
-import com.example.cuentas.entity.Cuenta;
 
 import java.util.List;
 
