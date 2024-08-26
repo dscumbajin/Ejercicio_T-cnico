@@ -12,4 +12,5 @@ public interface ICunetaServiceImpl {
     boolean delete(Long id);
     List<CuentaDTO> cuentaDtos();
     CuentaDTO findById(Long id);
+    CuentaDTO findByNumero(String numero);
 }

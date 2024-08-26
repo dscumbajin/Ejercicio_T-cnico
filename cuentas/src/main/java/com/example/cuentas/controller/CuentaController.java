@@ -110,4 +110,18 @@ public class CuentaController {
             return new ResponseEntity<>(response, HttpStatus.UNPROCESSABLE_ENTITY);
         }
     }
+
+    @GetMapping("/cuenta")
+    public ResponseEntity<?>findByNumero(@RequestParam String numero) {
+        try {
+            CuentaDTO cuentaDTO = cuentaService.findByNumero(numero);
+            return ResponseEntity.ok(Collections.singletonMap("data", cuentaDTO));
+        } catch (CuentaNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Collections.singletonMap("error", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+                    .body(Collections.singletonMap("error", "Error procesando la solicitud: " + e.getMessage()));
+        }
+    }
 }

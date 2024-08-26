@@ -108,4 +108,22 @@ public class CuentaServiceImpl implements ICunetaServiceImpl {
             throw new ClienteServiceUnavailableException("No se pudo conectar al servicio de clientes");
         }
     }
+
+    @Override
+    public CuentaDTO findByNumero(String numero) {
+        try {
+
+            if (!cuentaRepository.existsByNumero(numero)) {
+                throw new CuentaYaExisteException("Cuenta no encontrada");
+            }
+            Cuenta cuenta = cuentaRepository.findByNumero(numero);
+            ClienteDTO clienteDTO = clienteClient.getClienteById(Long.parseLong(cuenta.getClienteId()));
+            cuenta.setClienteId(clienteDTO.getNombre());
+            return cuentaMappers.toCuentaDTO(cuenta);
+        } catch (FeignException.NotFound e) {
+            throw new CuentaNotFoundException("Cliente no encontrado");
+        } catch (FeignException e) {
+            throw new ClienteServiceUnavailableException("No se pudo conectar al servicio de clientes");
+        }
+    }
 }
