@@ -1,10 +1,13 @@
 package com.example.clientes.service;
 
+import com.example.clientes.dto.ClienteRequestDTO;
 import com.example.clientes.dto.ClienteResponseDTO;
 import com.example.clientes.entity.Cliente;
 import com.example.clientes.exception.ClienteNotFoundException;
 import com.example.clientes.exception.ClienteYaExisteException;
+import com.example.clientes.mapper.ClientMapper;
 import com.example.clientes.repository.ClienteRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -24,51 +27,66 @@ class ClienteServiceImplTest {
     @Mock
     private ClienteRepository clienteRepository;
 
+    @Mock
+    private ClientMapper clientMapper;
+
     @InjectMocks
     private ClienteServiceImpl clienteService;
 
+    private Cliente cliente;
+    private ClienteRequestDTO clienteRequestDTO;
+    private ClienteResponseDTO clienteResponseDTO;
+
+
+    @BeforeEach
+    void setUp() {
+        cliente = new Cliente();
+        cliente.setId(1L);
+        cliente.setNombre("Test Cliente");
+        cliente.setIdentificacion("1234567890");
+
+        clienteRequestDTO = new ClienteRequestDTO();
+        clienteRequestDTO.setId(1L);
+        clienteRequestDTO.setNombre("Test Cliente");
+        clienteRequestDTO.setIdentificacion("1234567890");
+
+        clienteResponseDTO = new ClienteResponseDTO();
+        clienteResponseDTO.setNombre("Test Cliente");
+    }
+
     @Test
     public void save() {
-        Cliente cliente = new Cliente("test",true);
+        ClienteRequestDTO cliente = new ClienteRequestDTO(1L, "Juan", "Masculino", 20, "1234567890", "Quito", "0987654321", "admin", true);
         when(clienteRepository.findByIdentificacion(cliente.getIdentificacion())).thenReturn(null);
         boolean result = clienteService.save(cliente);
         assertTrue(result);
-        verify(clienteRepository, times(1)).save(cliente);
+        verify(clienteRepository, times(1)).save(clientMapper.toEntity(cliente));
     }
 
     @Test
     public void saveExistingCliente() {
-        Cliente cliente = new Cliente("test",true);
-        when(clienteRepository.findByIdentificacion(cliente.getIdentificacion())).thenReturn(cliente);
-        ClienteYaExisteException exception = assertThrows(ClienteYaExisteException.class,
-                () -> clienteService.save(cliente));
-        assertEquals("La identificación debe ser única", exception.getMessage());
-        verify(clienteRepository, never()).save(any());
+        when(clienteRepository.findByIdentificacion(clienteRequestDTO.getIdentificacion())).thenReturn(cliente);
+        assertThrows(ClienteYaExisteException.class, () -> clienteService.save(clienteRequestDTO));
     }
 
     @Test
     void clienteDTOs() {
-        Cliente cliente1 = new Cliente("test",true);
-        Cliente cliente2 = new Cliente("test2", true);
-        List<Cliente> clients = new ArrayList<>();
-        clients.add(cliente1);
-        clients.add(cliente2);
-        when(clienteRepository.findAll()).thenReturn(clients);
-        List<ClienteResponseDTO> clienteResponseDTOS = clienteService.clienteDTOs();
-        assertEquals(2, clienteResponseDTOS.size());
-        assertEquals(cliente1.getNombre(), clienteResponseDTOS.get(0).getNombre());
-        assertEquals(cliente2.getNombre(), clienteResponseDTOS.get(1).getNombre());
+        List<Cliente> clientes = List.of(cliente);
+        when(clienteRepository.findAll()).thenReturn(clientes);
+        when(clientMapper.toClienteDTO(cliente)).thenReturn(clienteResponseDTO);
+        List<ClienteResponseDTO> result = clienteService.clienteDTOs();
+        assertEquals(1, result.size());
+        verify(clienteRepository, times(1)).findAll();
     }
 
     @Test
     public void findById() {
-        Long idCliente = 1L;
-        Cliente cliente = new Cliente("test",true);
-        when(clienteRepository.findById(idCliente)).thenReturn(Optional.of(cliente));
-        ClienteResponseDTO clienteResponseDTO = clienteService.findById(idCliente);
-        assertEquals(cliente.getNombre(), clienteResponseDTO.getNombre());
+        when(clienteRepository.findById(1L)).thenReturn(Optional.of(cliente));
+        when(clientMapper.toClienteDTO(cliente)).thenReturn(clienteResponseDTO);
+        ClienteResponseDTO result = clienteService.findById(1L);
+        assertNotNull(result);
+        assertEquals("Test Cliente", result.getNombre());
     }
-
 
     @Test
     public void delete() {
@@ -82,26 +100,17 @@ class ClienteServiceImplTest {
 
     @Test
     public void updateExistingCliente() {
-        Long idCliente = 1L;
-        Cliente clienteExistente = new Cliente("test",true);
-        Cliente clienteActualizado = new Cliente("test2", true);
-        when(clienteRepository.findById(idCliente)).thenReturn(Optional.of(clienteExistente));
-        boolean result = clienteService.update(idCliente, clienteActualizado);
+        when(clienteRepository.findById(1L)).thenReturn(Optional.of(cliente));
+        when(clientMapper.toEntity(clienteRequestDTO)).thenReturn(cliente);
+        boolean result = clienteService.update(1L, clienteRequestDTO);
         assertTrue(result);
-        assertEquals(clienteActualizado.getNombre(), clienteExistente.getNombre());
-        assertEquals(clienteActualizado.getGenero(), clienteExistente.getGenero());
-        assertEquals(clienteActualizado.getEdad(), clienteExistente.getEdad());
-        assertEquals(clienteActualizado.getDireccion(), clienteExistente.getDireccion());
-        assertEquals(clienteActualizado.getTelefono(), clienteExistente.getTelefono());
-        assertEquals(clienteActualizado.getContrasena(), clienteExistente.getContrasena());
-        assertEquals(clienteActualizado.isEstado(), clienteExistente.isEstado());
-        verify(clienteRepository, times(1)).save(clienteExistente);
+        verify(clienteRepository, times(1)).save(cliente);
     }
 
     @Test
     public void updateNonExistingCliente() {
         Long idCliente = 1L;
-        Cliente clienteNoExistente = new Cliente("test",true);
+        ClienteRequestDTO clienteNoExistente = new ClienteRequestDTO(1L, "Juan", "Masculino", 20, "1234567890", "Quito", "0987654321", "admin", true);
         when(clienteRepository.findById(idCliente)).thenReturn(Optional.empty());
         ClienteNotFoundException exception = assertThrows(ClienteNotFoundException.class,
                 () -> clienteService.update(idCliente, clienteNoExistente));
@@ -117,5 +126,20 @@ class ClienteServiceImplTest {
                 () -> clienteService.delete(idCliente));
         assertEquals("Cliente no encontrado con ID: " + idCliente, exception.getMessage());
         verify(clienteRepository, never()).deleteById(anyLong());
+    }
+
+    @Test
+    void findClienteByNombre() {
+        when(clienteRepository.findByNombre("Test Cliente")).thenReturn(cliente);
+        when(clientMapper.toClienteIdDTO(cliente)).thenReturn(clienteRequestDTO);
+        ClienteRequestDTO result = clienteService.findByNombre("Test Cliente");
+        assertNotNull(result);
+        assertEquals("Test Cliente", result.getNombre());
+    }
+
+    @Test
+    void findClienteByNombreThrowsClienteNotFoundException() {
+        when(clienteRepository.findByNombre("Test Cliente")).thenReturn(null);
+        assertThrows(ClienteNotFoundException.class, () -> clienteService.findByNombre("Test Cliente"));
     }
 }

@@ -1,15 +1,12 @@
 package com.example.cuentas.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity(name= "cuentas")
@@ -27,7 +24,7 @@ public class Cuenta {
     private String tipoCuenta;
 
     @Column(name = "saldoInicial", nullable = false)
-    private double saldoInicial;
+    private Double saldoInicial;
 
     @Column(name = "estado", columnDefinition = "boolean default true")
     private boolean estado;

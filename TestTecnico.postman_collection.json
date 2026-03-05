@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "af0c9aaa-3d5a-4186-910f-20cddf7074c3",
+		"_postman_id": "9c82fafa-e2b9-4253-bd9c-583fd70af1c3",
 		"name": "TestTecnico",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "6171093"
@@ -15,12 +15,10 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8081/api/clientes",
-							"protocol": "http",
+							"raw": "{{base_url_clientes}}/api/clientes",
 							"host": [
-								"localhost"
+								"{{base_url_clientes}}"
 							],
-							"port": "8081",
 							"path": [
 								"api",
 								"clientes"
@@ -35,12 +33,10 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8081/api/clientes/1",
-							"protocol": "http",
+							"raw": "{{base_url_clientes}}/api/clientes/1",
 							"host": [
-								"localhost"
+								"{{base_url_clientes}}"
 							],
-							"port": "8081",
 							"path": [
 								"api",
 								"clientes",
@@ -56,12 +52,10 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8081/api/clientes/cliente?identificacion=0213456789",
-							"protocol": "http",
+							"raw": "{{base_url_clientes}}/api/clientes/cliente?identificacion=0213456789",
 							"host": [
-								"localhost"
+								"{{base_url_clientes}}"
 							],
-							"port": "8081",
 							"path": [
 								"api",
 								"clientes",
@@ -83,12 +77,10 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8081/api/clientes/nombre?nombre=Marianela Montalvo",
-							"protocol": "http",
+							"raw": "{{base_url_clientes}}/api/clientes/nombre?nombre=Marianela Montalvo",
 							"host": [
-								"localhost"
+								"{{base_url_clientes}}"
 							],
-							"port": "8081",
 							"path": [
 								"api",
 								"clientes",
@@ -111,7 +103,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n        \"nombre\": \"Marianela Montalvo\",\r\n        \"genero\": \"Femenino\",\r\n        \"edad\": 21,\r\n        \"identificacion\": \"0147852369\",\r\n        \"direccion\": \" Amazonas y NNUU \",\r\n        \"telefono\": \"097548965\",\r\n        \"contrasena\": \"5678\",\r\n        \"estado\": true\r\n    }",
+							"raw": "{\r\n        \"nombre\": \"Marianela Montalvo\",\r\n        \"genero\": \"Femenino\",\r\n        \"edad\": 21,\r\n        \"identificacion\": \"0147852369\",\r\n        \"direccion\": \" Amazonas y NNUU \",\r\n        \"telefono\": \"0975489650\",\r\n        \"contrasena\": \"5678\",\r\n        \"estado\": true\r\n    }",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -119,12 +111,10 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8081/api/clientes",
-							"protocol": "http",
+							"raw": "{{base_url_clientes}}/api/clientes",
 							"host": [
-								"localhost"
+								"{{base_url_clientes}}"
 							],
-							"port": "8081",
 							"path": [
 								"api",
 								"clientes"
@@ -148,12 +138,10 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8081/api/clientes/2",
-							"protocol": "http",
+							"raw": "{{base_url_clientes}}/api/clientes/2",
 							"host": [
-								"localhost"
+								"{{base_url_clientes}}"
 							],
-							"port": "8081",
 							"path": [
 								"api",
 								"clientes",
@@ -178,16 +166,39 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8081/api/clientes/5",
-							"protocol": "http",
+							"raw": "{{base_url_clientes}}/api/clientes/5",
 							"host": [
-								"localhost"
+								"{{base_url_clientes}}"
 							],
-							"port": "8081",
 							"path": [
 								"api",
 								"clientes",
 								"5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:8081/api/clientes/nombre?nombre=Marianela%20Montalvo",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url_clientes}}/api/clientes/nombre?nombre=Marianela%20Montalvo",
+							"host": [
+								"{{base_url_clientes}}"
+							],
+							"path": [
+								"api",
+								"clientes",
+								"nombre"
+							],
+							"query": [
+								{
+									"key": "nombre",
+									"value": "Marianela%20Montalvo"
+								}
 							]
 						}
 					},
@@ -204,12 +215,10 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8082/api/cuentas",
-							"protocol": "http",
+							"raw": "{{base_url_cuentas}}/api/cuentas",
 							"host": [
-								"localhost"
+								"{{base_url_cuentas}}"
 							],
-							"port": "8082",
 							"path": [
 								"api",
 								"cuentas"
@@ -224,12 +233,10 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8082/api/cuentas/1",
-							"protocol": "http",
+							"raw": "{{base_url_cuentas}}/api/cuentas/1",
 							"host": [
-								"localhost"
+								"{{base_url_cuentas}}"
 							],
-							"port": "8082",
 							"path": [
 								"api",
 								"cuentas",
@@ -246,7 +253,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n        \"numero\": \"585545\",\r\n        \"tipoCuenta\": \"Corriente\",\r\n        \"saldoInicial\": 1000,\r\n        \"estado\": true,\r\n        \"identificacion\": \"0123456789\"\r\n    }",
+							"raw": "{\r\n        \"numero\": \"585545\",\r\n        \"tipoCuenta\": \"Corriente\",\r\n        \"saldoInicial\": 1000,\r\n        \"estado\": true,\r\n        \"identificacion\": \"0147852369\"\r\n    }",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -254,12 +261,10 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8082/api/cuentas",
-							"protocol": "http",
+							"raw": "{{base_url_cuentas}}/api/cuentas",
 							"host": [
-								"localhost"
+								"{{base_url_cuentas}}"
 							],
-							"port": "8082",
 							"path": [
 								"api",
 								"cuentas"
@@ -283,12 +288,10 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8082/api/cuentas/5",
-							"protocol": "http",
+							"raw": "{{base_url_cuentas}}/api/cuentas/5",
 							"host": [
-								"localhost"
+								"{{base_url_cuentas}}"
 							],
-							"port": "8082",
 							"path": [
 								"api",
 								"cuentas",
@@ -313,12 +316,10 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8082/api/cuentas/6",
-							"protocol": "http",
+							"raw": "{{base_url_cuentas}}/api/cuentas/6",
 							"host": [
-								"localhost"
+								"{{base_url_cuentas}}"
 							],
-							"port": "8082",
 							"path": [
 								"api",
 								"cuentas",
@@ -339,12 +340,10 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8082/api/movimientos",
-							"protocol": "http",
+							"raw": "{{base_url_cuentas}}/api/movimientos",
 							"host": [
-								"localhost"
+								"{{base_url_cuentas}}"
 							],
-							"port": "8082",
 							"path": [
 								"api",
 								"movimientos"
@@ -359,12 +358,10 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8082/api/reportes?nombre=Marianela Montalvo&fechaInicio=05/7/2024&fechaFin=10/7/2024",
-							"protocol": "http",
+							"raw": "{{base_url_cuentas}}/api/reportes?nombre=Marianela Montalvo&fechaInicio=05/7/2024&fechaFin=10/8/2024",
 							"host": [
-								"localhost"
+								"{{base_url_cuentas}}"
 							],
-							"port": "8082",
 							"path": [
 								"api",
 								"reportes"
@@ -380,7 +377,7 @@
 								},
 								{
 									"key": "fechaFin",
-									"value": "10/7/2024"
+									"value": "10/8/2024"
 								}
 							]
 						}
@@ -393,16 +390,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8082/api/movimientos/1",
-							"protocol": "http",
+							"raw": "{{base_url_cuentas}}/api/movimientos/5",
 							"host": [
-								"localhost"
+								"{{base_url_cuentas}}"
 							],
-							"port": "8082",
 							"path": [
 								"api",
 								"movimientos",
-								"1"
+								"5"
 							]
 						}
 					},
@@ -414,12 +409,10 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8082/api/movimientos/cuenta?numero=496825",
-							"protocol": "http",
+							"raw": "{{base_url_cuentas}}/api/movimientos/cuenta?numero=496825",
 							"host": [
-								"localhost"
+								"{{base_url_cuentas}}"
 							],
-							"port": "8082",
 							"path": [
 								"api",
 								"movimientos",
@@ -442,7 +435,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"numero\": \"496825\",\r\n    \"tipo\": \"Retiro\",\r\n    \"valor\": \"540\"\r\n}",
+							"raw": "{\r\n    \"numero\": \"585545\",\r\n    \"tipo\": \"Retiro\",\r\n    \"valor\": \"200\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -450,12 +443,10 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8082/api/movimientos",
-							"protocol": "http",
+							"raw": "{{base_url_cuentas}}/api/movimientos",
 							"host": [
-								"localhost"
+								"{{base_url_cuentas}}"
 							],
-							"port": "8082",
 							"path": [
 								"api",
 								"movimientos"
@@ -479,12 +470,10 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8082/api/movimientos/3",
-							"protocol": "http",
+							"raw": "{{base_url_cuentas}}/api/movimientos/3",
 							"host": [
-								"localhost"
+								"{{base_url_cuentas}}"
 							],
-							"port": "8082",
 							"path": [
 								"api",
 								"movimientos",
@@ -509,12 +498,10 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8082/api/movimientos/5",
-							"protocol": "http",
+							"raw": "{{base_url_cuentas}}/api/movimientos/5",
 							"host": [
-								"localhost"
+								"{{base_url_cuentas}}"
 							],
-							"port": "8082",
 							"path": [
 								"api",
 								"movimientos",

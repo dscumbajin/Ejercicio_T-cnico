@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@FeignClient(name="clientes-microservice" , url="localhost:8081")
+@FeignClient(name="clientes-microservice" , url = "${clientes.service.url}")
 public interface ClienteClient {
     @GetMapping(value = "/api/clientes/cliente")
     ClienteDTO getCliente(@RequestParam("identificacion") String identificacion);
